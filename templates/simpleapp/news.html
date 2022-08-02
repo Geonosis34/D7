@@ -1,0 +1,69 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+<!-- Название у нас будет News -->
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все новости -->
+{% block content %}
+<h1>Все новости</h1>
+<h3>{% current_time '%d %b %Y' %}</h3>
+
+<h3> {{ next_upgrade|default_if_none:"Обновления каждый день!" }} </h3>
+<hr>
+{% if news %}
+        <table> <!-- Начинаем описывать таблицу -->
+           <tr>
+
+               <td>Название</td>
+               <td>Дата создания</td>
+               <td>Описание</td>
+               <td>Автор</td>
+               <td>Категория</td>
+           </tr>
+            {% for news in news %}
+            <td><a href="{% url 'news_detail' news.id %}">{{ news.id }}</a></td>
+           <tr>
+
+               <td>{{ news.name|censor|truncatechars:20 }}</td>
+               <td>{{ news.dateCreation|date:'d M Y' }}</td>
+               <td>{{ news.description|censor|truncatewords:20 }}</td>
+               <td>{{ news.author }}</td>
+               <td>{{ news.category }}</td>
+               </tr>
+           {% endfor %}
+       </table>
+   {% if is_paginated %}
+
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">>>></a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+    {% else %}
+        <h3>Новостей нет!</h3>
+    {% endif %}
+{% endif %}
+<hr>
+
+<a href="{% url 'news_create' %}"><u> Создать статью </u></a>
+<hr>
+<a href="{% url 'news_search' %}"><u> Поиск статьи </u></a>
+
+{% endblock content %}

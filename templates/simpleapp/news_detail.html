@@ -1,0 +1,56 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block title %}
+Detail
+{% endblock title %}
+
+{% block content %}
+<h2><u>Detail</u></h2>
+<h3>{% current_time '%d %b %Y' %}</h3>
+<p><h3>{{ news_detail.name|censor }}</h3></p>
+<p><u>{{ news_detail.dateCreation|date:'d-m-Y H:i' }}</u></p>
+<p>{{ news_detail.description|censor }}</p>
+<p>{{ news_detail.author }}</p>
+<p>{{ news_detail.category }}</p>
+<hr>
+<a href="{% url 'news_update' news_detail.id %}"><u> Редактировать статью</u><a/>
+<hr>
+<a href="{% url 'news_delete' news_detail.id %}"><u> Удалить статью</u><a/>
+<hr>
+{% if is_subscribed %}
+        <div class="subscribe">
+          <strong>
+            You are already subscribed to <em>{{ news_detail.category }}</em>. Unsubscribe?
+            {% if subscription_object == 'category_subscription' %}
+                  </strong>
+                  <a href="{% url 'unsub_cat' name.id %}">
+                    <button class="pure-button button-success" style="border-radius: 15px">
+                      <i class="bi bi-bookmark-plus"></i>
+                      Unsubscribe
+                    </button>
+                  </a>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="subscribe">
+          <strong>
+            Do you want to subscribe to <em>{{ news_detail.category }}</em>?
+                  </strong>
+                  <a href="{% url 'sub_cat' 5 %}">
+                    <button>
+                      Subscribe
+                    </button>
+                  </a>
+        </div>
+    {% endif %}
+<hr>
+<select name="SubscribeForm" multiple="multiple" size="3">
+  <option value="1">{{ queryset=Category.objects.order_by('-name') }}</option>
+  <option value="2">{{ news_detail.category.id=2 }}</option>
+  <option value="3">{{ news_detail.category }}</option>
+  <option value="4">{{ news_detail.category }}</option>
+  <option value="5">{{ news_detail.category }}</option>
+</select>
+{% endblock content %}
